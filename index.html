@@ -12,9 +12,6 @@
   <input id="__urlbox" placeholder="Type address...." value="/public/index.hr"></input>
   <button onclick="visit()" type="submit">Go!</button>
 </div>
-<div id="__addressbar">
-  <input id="__urlbox" placeholder="Type address...." value="/public/index.hr"</input>
-  <button onclick="download()" type="submit"<Download</button>
 <div id="__view"><p id="nojs">It seems like you disabled Javascript. Because of that, This site won't work anymore.</p></div>
 <br><br>
 <span id="__mesg"></span>
@@ -22,7 +19,7 @@
 </body>
 <style>
 body {
-	font-family: sans-serif;
+	font-family: monospace;
 }
 
 #__mesg {
@@ -147,10 +144,6 @@ document.getElementById("nojs").style.display = "none";
 	function visit() {
 		goTo(abox.value);
 	}
-	function download() {
-		<a href=abox.value>download</a>
-	}
-
 	// Load main page
 	goTo(location.hash.startsWith("#") ? location.hash.slice(1) : "/mirror/mirror.txt");
 </script>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prinux</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="My personal site.">
+</head>
+<body>
+<div id="__addressbar">
+  <input id="__urlbox" placeholder="Type address...." value="/public/index.hr"></input>
+  <button onclick="visit()" type="submit">Go!</button>
+</div>
+<div id="__addressbar">
+  <input id="__urlbox" placeholder="Type address...." value="/public/index.hr"</input>
+  <button onclick="download()" type="submit"<Download</button>
+<div id="__view"><p id="nojs">It seems like you disabled Javascript. Because of that, This site won't work anymore.</p></div>
+<br><br>
+<span id="__mesg"></span>
+<button id="__darkmode" onclick="darkmode()">Dark Mode</button>
+</body>
+<style>
+body {
+	font-family: sans-serif;
+}
+
+#__mesg {
+	position: fixed;
+	bottom: 32px;
+	left: 4px;
+	display: block;
+	border: solid 1px;
+	border-radius: 4px;
+	color: red;
+	background: white;
+	z-index: 3;
+}
+
+button {
+	border: solid 1px;
+	border-radius: 4px;
+	background: white;
+}
+
+#__darkmode {
+	position: fixed;
+	bottom: 4px;
+	right: 4px;
+}
+
+#__addressbar {
+	position: fixed;
+	z-index: 2;
+	left: 4px;
+	width: auto;
+	height: auto;
+	border: solid 1px;
+	bottom: 4px;
+}
+
+i {
+	color: grey;
+}
+
+</style>
+<script>
+document.getElementById("nojs").style.display = "none";
+</script>
+<script src="index.js"></script>
+<script>
+	const viewelem = document.getElementById("__view"); // View Elememt
+	const mesgelem = document.getElementById("__mesg"); // Error message element.
+	const dmelem = document.getElementById("__darkmode");
+	let abox = document.getElementById("__urlbox");
+	let dm = false;
+	if (typeof hender !== "function") {
+		document.write("hender() is not a function, Or a component is failed to load in your browser. Please try again later or refresh the page. If the problem still persist, Check your network connection and browser update, or contact to the website owner.");
+		throw new Error("hender() is not a function!");
+	}
+
+	const render = hender();
+
+	function msg(m, e, nt) {
+		if (mesgelem.timeout) clearTimeout(mesgelem.timeout);
+		mesgelem.style.display = "block";
+		mesgelem.innerHTML = m;
+		mesgelem.style.color = e ? "red" : (dm ? "white" : "black");
+		if (!nt) mesgelem.timeout = setTimeout(() => {
+		mesgelem.style.display = "none";
+		}, 5000);
+	}
+
+	// Function to go & load....
+	async function goTo(url, f) {
+		let startDate = Date.now();
+		msg("Loading " + url + "....", 0, 1);
+		location.hash = "#" + url;
+		abox.value = url;
+		try {
+			let res = await fetch(url);
+			if (!f && res.headers['content-type'] && !res.headers['content-type'].startsWith("text")) {
+				msg(`The link that you tap does not seem supported with this client.<br><br>Continue anyway, or open in new tab?<br><br><button onclick="window.open('${url}')">Open in new Tab</button><button onclick="goTo('${url}')">Continue anyway</button><button onclick="hide_msg()">Cancel</button>`, 1);
+				return;
+			}
+			if (!res.ok) throw "Server responded with " + res.status;
+			msg("Server responded. Waiting for reply....", 0, 1);
+			let body = await res.text();;
+			viewelem.innerHTML = render(body);
+			let as = document.getElementsByTagName("a");
+			for (a in as) {
+				let aurl = as[a].href;
+				if (!as[a] || !as[a].href) continue;
+				as[a].onclick = _ => goTo(aurl);
+				as[a].href = "#" + as[a].href;
+			}
+			msg("Loaded in " + ((Date.now() - startDate) / 1000).toFixed(2) + "s");
+		} catch (err) {
+			msg(`<b>Failed to requesting to the server:</b><br>${err.toString()}<br><br> It seems like the URL is not Hender website, However you may open it in new tab.<br><br>Request again, or open in new tab?<br><br><button onclick="window.open('${url}')">Open in new Tab</button><button onclick="goTo('${url}')">Reload</button><button onclick="hide_msg()">Cancel</button>`, 0, 1);
+		}
+	}
+
+	function darkmode() {
+		if (dm) {
+			document.body.style.color = "black";
+			document.body.style.background = "white";
+			dmelem.innerHTML = "Dark Mode";
+			dmelem.style.background = "white";
+			dmelem.style.color = "black";
+			mesgelem.style.background = "white";
+			dm = false;
+		} else {
+			document.body.style.color = "white";
+			document.body.style.background = "black";
+			dmelem.innerHTML = "Light Mode";
+			dmelem.style.background = "black";
+			dmelem.style.color = "white";
+			mesgelem.style.background = "black";
+			dm = true;
+		}
+	}
+
+	function hide_msg() {
+		mesgelem.style.display = "none";
+	}
+
+	function visit() {
+		goTo(abox.value);
+	}
+	function download() {
+		<a href=abox.value>download</a>
+	}
+
+	// Load main page
+	goTo(location.hash.startsWith("#") ? location.hash.slice(1) : "/mirror/mirror.txt");
+</script>
+</html>
